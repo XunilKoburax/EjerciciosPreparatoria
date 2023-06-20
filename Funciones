@@ -1,0 +1,68 @@
+import 'dart:async';//Importar la libreria de sincronizacion en el tiempo
+import 'package:flutter/material.dart';
+
+class Timmer extends StatefulWidget {
+  const Timmer({super.key});
+
+  @override
+  _TimmerState createState() => _TimmerState();
+}
+
+class _TimmerState extends State<Timmer> {
+  int contador = 0;
+  late Timer timer; // crea una variable timer que no sera
+  //inicializada aun y tendra un valor futuro
+
+  @override
+  void initState() {  // Se crea un metodo que implementa al constructor
+    super.initState();
+  }
+
+  void startTimer() { //funcion para inicializar el contador basado en tiempo
+    timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      setState(() {
+        contador++;
+      });
+    });
+  }
+
+  void stopTimer(){ //Detiene el emporizador
+    timer.cancel();
+  }
+
+
+  @override
+  void dispose() {//Se crea para poder cancelar el temporizador para evitar desbordamiento de memoria
+    timer.cancel(); // Importante: cancelar el temporizador al finalizar el widget
+    super.dispose();//modifica el comportamiento de la funcion implementado el constructor
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ejemplo Timer.periodic'),
+      ),
+      body: Center(
+        child:Column(
+          children: [
+            Text('Contador: $contador'),
+            FloatingActionButton(
+              child: const Icon(Icons.stop),
+              onPressed: () {
+              stopTimer();
+            },
+            
+            ),FloatingActionButton(
+              child: const Icon(Icons.play_arrow),
+              onPressed: () {
+              startTimer();
+            },
+            )
+          ],
+        )
+      ),
+    );
+  }
+}
