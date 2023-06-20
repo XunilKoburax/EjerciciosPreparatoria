@@ -1,0 +1,195 @@
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import '/Pantallas/OperationButton.dart';
+import 'dart:async';
+
+class Widget_Personalizado extends StatefulWidget {
+  
+  const Widget_Personalizado({super.key});
+
+  @override
+  State<Widget_Personalizado> createState() => _Widget_PersonalizadoState();
+}
+
+class _Widget_PersonalizadoState extends State<Widget_Personalizado> {
+  double Barra=0.0;
+  //Nuevos parametros, el movimiento de la pelota basado en el tiempo
+  double ballX = 0.0; //Desplazamiento en X
+  double ballY = 0.0; //Desplazamiento en Y
+  double ballRadius = 30.0; //Tamaño del contenedor
+  double ballSpeedX = 5.0; //Velocidad que va a tener nuestra pelota
+  double ballSpeedY = 5.0; //Velocidad que va a tener nuestra pelota
+  double containerWidth = 0.0; // Tamaño del ancho de nuestro contenedor
+  double containerHeight = 0.0; //Tamaño del alto del contenedor del telefono
+  Timer? timer; //Inicializar el objeto asincrono de nuestro timer
+  double barraX1 = 0.0;
+  double barraX2 = 0.0;
+  double barraY = 0.0;
+
+
+  //se coloca una sobre escritura de 
+ @override
+  void initState() {  // Se crea un metodo que implementa al constructor
+    super.initState();
+    containerWidth = 400; //Posicion inicial en X
+    containerHeight = 600; //Posicion inicial en X
+    ballX=(containerWidth-ballRadius)/2; //Tratar de centrar X
+    ballY=(containerHeight-ballRadius)/2; // Tratar de Centrar en Y
+  }
+  
+  void startTimer() { //funcion para inicializar el contador basado en tiempo
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      setState(() {
+        updateBallPosition(); //Actualizar posicion
+      });
+    });
+  }
+
+  
+
+
+@override
+  Widget build(BuildContext context) {
+    containerWidth = MediaQuery.of(context).size.width; // Obtener tamaño en X
+    containerHeight = MediaQuery.of(context).size.height -
+        AppBar().preferredSize.height -
+        (MediaQuery.of(context).padding.top + MediaQuery.of(context).padding.bottom) -
+        90.0; //Obtener tamaño en Y
+    barraY =  MediaQuery.of(context).padding.bottom;
+     return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+        title: const Center(child: Text('Containers')),
+      ),
+        body: Column(
+          children: [
+            Expanded(
+              flex: 6,
+              child: Container(
+                color: Colors.blue,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      bottom: barraY,
+                      left: barraX1,
+                      child: Container(
+                        width: 150,
+                        height: 30,
+                        color: Colors.amber,
+
+                    ),
+                    ),
+                    /*
+Container(
+                      //color: Colors.amber,
+                      alignment: Alignment(Barra,1),
+                      child: 
+                      Container(
+                        width: 150,
+                        height: 50,
+                        color: Colors.red,
+                      ),                      
+                    ),
+*/
+                    Positioned(
+                      left: ballX,// Coloca a la mitad de la pantalla en el eje x
+                      bottom: ballY, //Coloca a la pelota a la mitad de la pantalla en el eje Y
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: const BoxDecoration(//Sirve para tansformar el como se muestra en la pantalla el objeto
+                          shape: BoxShape.circle, //Permite que la figura sea un irculo
+                          color: Colors.red,
+                        ),
+                      )
+                    )
+                  ],
+                ),
+
+              )
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(
+                color: Colors.brown,
+                child: OperationButton(
+                  fnDisminuir: fnDisminuir, 
+                  fnIncrementar: fnIncrementar)
+
+
+            ))
+          ],)
+      ),
+
+     );
+  }
+
+  fnDisminuir() {
+    Barra-=40;
+    setState(() {
+      startTimer();    
+    });
+  }
+
+  fnIncrementar() {
+    Barra+=40;
+    setState(() {
+      startTimer();
+    });
+  }
+
+  void updateBallPosition() {
+  setState(() {
+
+      // Actualizar posición de la pelota
+
+      // Rebotar cuando alcanza los bordes izquierdo o derecho
+      if (ballX > (containerWidth-ballRadius) ) {
+        ballSpeedX*=-1;
+        ballX+=ballSpeedX; // Invertir la dirección de movimiento
+      }
+      else if(ballX <= 0.0 ){
+        ballX+=5;
+        ballSpeedX*=-1;
+        ballX+=ballSpeedX; // Invertir la dirección de movimiento
+      }
+      else if( ballX >0 && ballX <containerWidth){
+        ballX+=ballSpeedX; //continuar movimiento en caso contrario
+      }
+
+      if (ballY > (containerHeight-ballRadius) ) {
+        ballSpeedY*=-1;
+        ballY+=ballSpeedY; // Invertir la dirección de movimiento
+      }
+      else if(ballY <= 0.0 ){
+        ballY+=5;
+        ballSpeedY*=-1;
+        ballY+=ballSpeedY; // Invertir la dirección de movimiento
+      }
+      else if( ballY >0 && ballY <containerHeight){
+        ballY+=ballSpeedY; //Continuar desplazamiento en caso contrario
+      }
+      //Localizacion de la barra
+      barraX1 = Barra - 75;
+      barraX2 = Barra + 75;
+
+      print("x1 es: $barraX1");
+      print("x2 es: $barraX2");
+      print("$ballY");
+      print("$barraY");
+
+      if(ballX <barraX2 && ballX > barraX1 && ballY == (barraY+20)){
+        ballY+=5;
+        ballSpeedY*=-1;
+        ballY+=ballSpeedY;
+
+      }
+
+    });
+  }
+}
+
+
+
+
